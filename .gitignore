@@ -1,0 +1,45 @@
+# --- Archivos de Configuración Sensible ---
+.env
+.env.backup
+.env.production
+.phpactor.json
+auth.json
+
+# --- Carpetas de Dependencias ---
+/node_modules
+/vendor
+
+# --- Almacenamiento y Cache de Laravel ---
+/public/build
+/public/hot
+/public/storage
+/storage/*.key
+/storage/framework/cache/data/*
+/storage/framework/sessions/*
+/storage/framework/testing/*
+/storage/framework/views/*
+/storage/logs/*
+/storage/pail
+!/storage/app/.gitignore
+!/storage/framework/.gitignore
+!/storage/logs/.gitignore
+
+# --- Cache de Bootstrap ---
+/bootstrap/cache/*
+!/bootstrap/cache/.gitignore
+
+# --- Herramientas de Desarrollo y Entornos ---
+/.fleet
+/.idea
+/.nova
+/.phpunit.cache
+/.vscode
+/.zed
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+
+# --- Archivos del Sistema Operativo ---
+.DS_Store
+Thumbs.db
+*.log
