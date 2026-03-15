@@ -14,12 +14,24 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         User::create([
-            'username' => 'Admin',
+            'curp' => 'ROSI900201HDFLRS06',
             'name' => 'Administrador',
             'lastname' => 'Sistema',
+            'lastname2' => 'X',
+            'state' => 'Guerrero',
+            'municipality' => 'Chilpancingo',
+            'locality' => 'Chilpancingo',
+            'colony' => 'Centro',
+            'street' => 'Av. Principal',
+            'exterior_number' => 'S/N',
+            'zip_code' => '39000',
+            'phone' => '7400000000',
             'adscription' => 'Dirección General',
             'email' => 'admin@icategro.edu.mx',
-            'password' => Hash::make('password'),
+            'username' => 'Admin',
+            'password' => Hash::make('ICATEGRO2026'),
+            'role' => 'ADMINISTRADOR',
+            'permissions' => '["*"]',
         ]);
     }
 }

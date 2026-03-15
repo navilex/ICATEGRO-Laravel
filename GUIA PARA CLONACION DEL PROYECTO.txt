@@ -1,0 +1,170 @@
+GUIA PARA CLONACIÓN DEL PROYECTO
+
+----------------------------------------------------------------------------------------
+
+Requisitos Previos:
+
+- XAMPP: Con PHP 8.2 o superior y MySQL.
+- Composer: Gestor de dependencias de PHP. (Versión 2.9.5)
+- Node.js: (Versión LTS) y NPM para la compilación del Frontend. (Versión 24.13.1)
+- Git: Para el control de versiones. (Versión 2.51.0)
+- IDE Recomendado: Antigravity (VS Code) o similar.
+
+Nota: Revisar compatibilidades de las versiones que se especifican.
+
+----------------------------------------------------------------------------------------
+
+Comandos de verificación de instalación y versiones:
+
+composer --version
+node --version
+git --version
+
+Nota: Revisar documentación de XAMPP para conocer versión de PHP.
+
+----------------------------------------------------------------------------------------
+
+Configuración previa:
+
+Pasos para instalar Composer:
+
+Ejecuta el archivo: Dale doble clic al Composer-Setup.exe que descargaste.
+
+Modo de instalación: Si te pregunta, elige "Install for all users" (Instalar para todos los usuarios). Es lo estándar y te evitará problemas de permisos. El instalador te pedirá que elijas la línea de comandos de PHP (Command-line PHP).
+
+Por defecto, quizás intente buscar en C:\. Tú debes dar clic en Browse (Examinar) y buscar manualmente esta ruta exacta, por ejemplo: D:\xampp\php\php.exe
+
+Selecciona ese archivo y continúa.
+
+Proxy: Si te pregunta sobre un servidor Proxy, déjalo en blanco y dale a Next.
+
+Finalizar: Dale a Install y luego a Finish.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Habilitar empaquetado de composer:
+
+Tienes que "encender" el interruptor de ZIP en tu configuración de PHP. El mismo mensaje te dice dónde está el archivo de tu instalación, por ejemplo: D:\xampp\php\php.ini.
+
+Sigue estos pasos exactos:
+
+1. Abre el archivo de configuración:
+
+Ve a la carpeta D:\xampp\php. Busca el archivo llamado php.ini (puede que solo veas php si tienes las extensiones ocultas, pero el ícono será de una tuerca o archivo de configuración). Ábrelo con tu Bloc de Notas o VS Code.
+
+2. Busca la línea:
+
+Presiona Ctrl + B (o Ctrl + F) para buscar. Escribe: extension=zip
+
+3. Actívala:
+
+Seguramente encontrarás la línea así: ;extension=zip
+
+Debes borrar el punto y coma (;) del principio. Debe quedar así: extension=zip
+
+4. Guarda y Cierra:
+
+Guarda el archivo (Ctrl + G o Ctrl + S).
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Pasos para configurar git:
+
+1. Identidad (Tu firma en el código)
+Cada vez que guardes un avance (commit) en el sistema escolar, Git necesita saber quién eres.
+(Reemplaza los datos con los tuyos).
+
+git config --global user.name "Tu Nombre Completo"
+git config --global user.email "tu@email.com"
+
+2. El "Traductor" de Windows a Linux (CRLF)
+Este es el comando más importante para ti que estás en Windows programando PHP.
+Windows usa un código invisible para el "fin de línea" (Enter) diferente al de Linux. Si no configuras esto, tus archivos pueden romperse al subirlos a un servidor.
+
+git config --global core.autocrlf true
+
+3. Nombre de la Rama Principal
+Antiguamente se llamaba "master", pero el estándar moderno (y el que usa GitHub/GitLab por defecto) es main. Configúralo así para evitar confusiones futuras.
+
+git config --global init.defaultBranch main
+
+4. Verificación Final
+Para asegurarte de que todo quedó guardado correctamente, escribe:
+
+git config --list
+
+----------------------------------------------------------------------------------------
+
+Clonar el repositorio:
+
+Ve a tu carpeta htdocs de XAMPP y sigue estrictamente esta receta. Abre una terminal en la carpeta y colocar:
+
+git clone https://github.com/navilex/ICATEGRO-Laravel.git cd ICATEGRO-Laravel
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Reconstruir el Backend (PHP):
+
+composer install
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Reconstruir el Frontend (Node.js):
+
+npm install
+npm run build
+
+Si npm install arroja un error rojo indicando que "la ejecución de scripts está deshabilitada", ejecuta este comando en PowerShell como administrador (o en la misma terminal si te lo permite) y acepta con "S":
+
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Crear el archivo de Entorno:
+
+Abre el proyecto en tu IDE (Antigravity).
+
+Buscar el archivo llamado .env.example.
+
+Duplicarlo/Copiarlo y renombrar la copia para que se llame exactamente .env (con el punto al inicio).
+
+Abrir ese nuevo .env y configurar el nombre de la base de datos (ej. DB_DATABASE=sistema_escolar).
+
+Borrar el bloque y reemplazalo para que quede exactamente así:
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=sistema_escolar
+DB_USERNAME=root
+DB_PASSWORD=
+
+Limpia la memoria del sistema para que reconozca el MySQL y genera la llave criptográfica:
+
+php artisan config:clear
+php artisan cache:clear
+php artisan key:generate
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Configurar la Base de Datos:
+
+Encender Apache y MySQL en tu XAMPP.
+
+Ir a http://localhost/phpmyadmin y crear una base de datos vacía con el nombre que puso en su .env (ej. sistema_escolar).
+
+En la terminal, correr las migraciones para que Laravel construya las tablas:
+
+php artisan migrate
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Cargar datos iniciales de la base de datos:
+
+php artisan db:seed
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Levantar el Servidor:
+
+php artisan serve
