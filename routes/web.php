@@ -85,8 +85,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/planteles', [\App\Http\Controllers\PlantelController::class, 'store'])->name('planteles.store');
 
     // Grupos Routes
+    Route::get('/grupos', [\App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
     Route::get('/grupos/create', [\App\Http\Controllers\GrupoController::class, 'create'])->name('grupos.create');
     Route::post('/grupos', [\App\Http\Controllers\GrupoController::class, 'store'])->name('grupos.store');
+    Route::get('/grupos/{grupo}/edit', [\App\Http\Controllers\GrupoController::class, 'edit'])->name('grupos.edit');
+    Route::put('/grupos/{grupo}', [\App\Http\Controllers\GrupoController::class, 'update'])->name('grupos.update');
     Route::get('/api/grupos/campos-formacion/{ofertaId}', [\App\Http\Controllers\GrupoController::class, 'getCamposFormacion']);
     Route::get('/api/grupos/especialidades/{campoId}', [\App\Http\Controllers\GrupoController::class, 'getEspecialidades']);
     Route::get('/api/grupos/cursos/{especialidadId}/{tipo}', [\App\Http\Controllers\GrupoController::class, 'getCursos']);

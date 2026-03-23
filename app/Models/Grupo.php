@@ -10,6 +10,7 @@ class Grupo extends Model
     use HasFactory;
 
     protected $fillable = [
+        'estatus',
         'tipo_servicio',
         'modalidad_ce',
         'modalidad',

@@ -64,7 +64,7 @@
                             <a href="{{ route('grupos.create') }}"
                                 class="block px-4 py-2 text-sm text-gray-800 hover:bg-red-800 hover:text-white font-semibold transition">Registrar
                                 grupo</a>
-                            <a href="#"
+                            <a href="{{ route('grupos.index') }}"
                                 class="block px-4 py-2 text-sm text-gray-800 hover:bg-red-800 hover:text-white font-semibold transition">Lista
                                 de grupos</a>
                         </div>

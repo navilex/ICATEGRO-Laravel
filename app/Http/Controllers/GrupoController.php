@@ -13,6 +13,20 @@ use App\Models\Plantel;
 
 class GrupoController extends Controller
 {
+    public function index()
+    {
+        $query = Grupo::with(['plantel', 'curso', 'cursoIcategro', 'instructores']);
+
+        if (auth()->user()->role !== 'ADMINISTRADOR') {
+            $query->whereHas('plantel', function ($q) {
+                $q->where('name', auth()->user()->adscription);
+            });
+        }
+
+        $grupos = $query->get();
+        return view('grupos.index', compact('grupos'));
+    }
+
     public function create()
     {
         $ofertas = OfertaEducativa::all();
@@ -145,5 +159,65 @@ class GrupoController extends Controller
                 ->get();
         }
         return response()->json($cursos);
+    }
+    public function edit(Grupo $grupo)
+    {
+        $ofertas = OfertaEducativa::all();
+        $sedes = Plantel::all();
+        $grupo->load(['calendarios', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional']);
+
+        return view('grupos.edit', compact('grupo', 'ofertas', 'sedes'));
+    }
+
+    public function update(Request $request, Grupo $grupo)
+    {
+        $validated = $request->validate([
+            'tipo_servicio' => 'required|string',
+            'modalidad_ce' => 'nullable|string',
+            'modalidad' => 'required|string',
+            'oferta_educativa_id' => 'required|exists:oferta_educativas,id',
+            'campo_formacion_id' => 'required|exists:campo_formacions,id',
+            'especialidad_ocupacional_id' => 'required|exists:especialidad_ocupacionals,id',
+            'curso_id' => 'nullable|exists:cursos,id',
+            'curso_icategro_id' => 'nullable|exists:curso_icategros,id',
+            'alumnos_inician' => 'required|integer|min:0',
+            'capacidad_maxima' => 'required|integer|min:1',
+            'fecha_inicio' => 'required|date',
+            'fecha_termino' => 'required|date|after_or_equal:fecha_inicio',
+            'duracion_dias' => 'required|integer|min:1',
+            'duracion_horas' => 'required|integer|min:1',
+            'numero_semanas' => 'required|integer|min:1',
+            'numero_horas_semana' => 'required|numeric|min:0',
+            'horario' => 'required|string',
+            'plantel_id' => 'required|exists:planteles,id',
+            'estado' => 'required|string|max:255',
+            'municipio' => 'required|string|max:255',
+            'localidad' => 'required|string|max:255',
+            'nombre_espacio' => 'required|string|max:255',
+            'calendario_data' => 'required|string'
+        ]);
+
+        $calendarios = json_decode($request->calendario_data, true);
+        if (!$calendarios || count($calendarios) === 0) {
+            return back()->withInput()->withErrors(['calendario_data' => 'El grupo no puede guardarse sin fechas del calendario.']);
+        }
+
+        $grupo->update($validated);
+
+        // Reconstruir calendarios
+        $grupo->calendarios()->delete();
+        foreach ($calendarios as $cal) {
+            $grupo->calendarios()->create([
+                'tipo_fecha' => $cal['tipo_fecha'],
+                'fecha_inicial' => $cal['fecha_inicial'],
+                'fecha_final' => !empty($cal['fecha_final']) ? $cal['fecha_final'] : null,
+                'hora_inicial' => $cal['hora_inicial'],
+                'hora_final' => $cal['hora_final'],
+                'total_dias' => $cal['total_dias'],
+                'total_horas' => $cal['total_horas'],
+            ]);
+        }
+
+        return redirect()->route('grupos.index')->with('success', 'Grupo modificado exitosamente.');
     }
 }

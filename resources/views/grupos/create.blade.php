@@ -1791,193 +1791,191 @@
             }
         };
 
-    };
+        // --- FINANZAS LOGIC ---
+        const tipoPagoSelect = document.getElementById('tipo_pago_grupo');
+        const costoPersonaInput = document.getElementById('costo_por_persona');
+        const costoGrupoInput = document.getElementById('costo_por_grupo');
+        const costoCoffeeInput = document.getElementById('costo_coffee_break');
+        const ingresoTotalInput = document.getElementById('ingreso_total');
+        const utilidadGrupoInput = document.getElementById('utilidad_grupo');
+        const alumnosInicianInput = document.getElementById('alumnos_inician');
 
-    // --- FINANZAS LOGIC ---
-    const tipoPagoSelect = document.getElementById('tipo_pago_grupo');
-    const costoPersonaInput = document.getElementById('costo_por_persona');
-    const costoGrupoInput = document.getElementById('costo_por_grupo');
-    const costoCoffeeInput = document.getElementById('costo_coffee_break');
-    const ingresoTotalInput = document.getElementById('ingreso_total');
-    const utilidadGrupoInput = document.getElementById('utilidad_grupo');
-    const alumnosInicianInput = document.getElementById('alumnos_inician');
+        function calcularFinanzas() {
+            let ingresos = 0;
+            let egresos = 0;
+            const tipoPago = tipoPagoSelect.value;
+            const alumnos = parseFloat(alumnosInicianInput.value) || 0;
+            const costoPersona = parseFloat(costoPersonaInput.value) || 0;
+            const costoGrupo = parseFloat(costoGrupoInput.value) || 0;
+            const costoCoffee = parseFloat(costoCoffeeInput.value) || 0;
 
-    function calcularFinanzas() {
-        let ingresos = 0;
-        let egresos = 0;
-        const tipoPago = tipoPagoSelect.value;
-        const alumnos = parseFloat(alumnosInicianInput.value) || 0;
-        const costoPersona = parseFloat(costoPersonaInput.value) || 0;
-        const costoGrupo = parseFloat(costoGrupoInput.value) || 0;
-        const costoCoffee = parseFloat(costoCoffeeInput.value) || 0;
-
-        // 1. Calcular Ingresos
-        if (tipoPago === 'PAGO POR PERSONA') {
-            ingresos = alumnos * costoPersona;
-        } else if (tipoPago === 'PAGO POR GRUPO') {
-            ingresos = costoGrupo;
-        } else if (tipoPago === 'CONDONACION' || tipoPago === 'BECA GRUPAL') {
-            ingresos = 0;
-        }
-
-        ingresoTotalInput.value = ingresos.toFixed(2);
-
-        // 2. Calcular Egresos (Coffee Break + Suma Honorarios Instructores)
-        let sumaHonorarios = 0;
-        instructoresData.forEach(inst => {
-            if (inst.tipo === 'HONORARIOS' && inst.pago_instructor) {
-                sumaHonorarios += parseFloat(inst.pago_instructor);
+            // 1. Calcular Ingresos
+            if (tipoPago === 'PAGO POR PERSONA') {
+                ingresos = alumnos * costoPersona;
+            } else if (tipoPago === 'PAGO POR GRUPO') {
+                ingresos = costoGrupo;
+            } else if (tipoPago === 'CONDONACION' || tipoPago === 'BECA GRUPAL') {
+                ingresos = 0;
             }
-        });
 
-        egresos = costoCoffee + sumaHonorarios;
+            ingresoTotalInput.value = ingresos.toFixed(2);
 
-        // 3. Utilidad
-        const utilidad = ingresos - egresos;
-        utilidadGrupoInput.value = utilidad.toFixed(2);
-    }
+            // 2. Calcular Egresos (Coffee Break + Suma Honorarios Instructores)
+            let sumaHonorarios = 0;
+            instructoresData.forEach(inst => {
+                if (inst.tipo === 'HONORARIOS' && inst.pago_instructor) {
+                    sumaHonorarios += parseFloat(inst.pago_instructor);
+                }
+            });
 
-    function evaluarTipoPagoGrupo() {
-        const tipo = tipoPagoSelect.value;
+            egresos = costoCoffee + sumaHonorarios;
 
-        // Disable everything initially 
-        costoPersonaInput.disabled = true;
-        costoGrupoInput.disabled = true;
-
-        if (tipo === 'PAGO POR PERSONA') {
-            costoPersonaInput.disabled = false;
-            costoGrupoInput.value = '0.00';
-        } else if (tipo === 'PAGO POR GRUPO') {
-            costoGrupoInput.disabled = false;
-            costoPersonaInput.value = '0.00';
-        } else {
-            // BECA GRUPAL y CONDONACION
-            costoPersonaInput.value = '0.00';
-            costoGrupoInput.value = '0.00';
+            // 3. Utilidad
+            const utilidad = ingresos - egresos;
+            utilidadGrupoInput.value = utilidad.toFixed(2);
         }
 
-        calcularFinanzas();
-    }
+        function evaluarTipoPagoGrupo() {
+            const tipo = tipoPagoSelect.value;
 
-    tipoPagoSelect.addEventListener('change', evaluarTipoPagoGrupo);
-    costoPersonaInput.addEventListener('input', calcularFinanzas);
-    costoGrupoInput.addEventListener('input', calcularFinanzas);
-    costoCoffeeInput.addEventListener('input', calcularFinanzas);
-    alumnosInicianInput.addEventListener('input', calcularFinanzas);
+            // Disable everything initially 
+            costoPersonaInput.disabled = true;
+            costoGrupoInput.disabled = true;
 
-    // Inject hook onto btnAgregarInst 
-    const btnAgInstFin = document.getElementById('btn_agregar_instructor');
-    if (btnAgInstFin) {
-        btnAgInstFin.addEventListener('click', () => { setTimeout(calcularFinanzas, 50); });
-    }
-
-    // Inject hook onto window.deleteInstructorItem
-    const oldDelInst = window.deleteInstructorItem;
-    window.deleteInstructorItem = function (id) {
-        oldDelInst(id);
-        calcularFinanzas();
-    };
-
-    // --- ARCHIVOS Y COMENTARIOS LOGIC ---
-    // Helper function to format bytes
-    function formatBytes(bytes) {
-        if (bytes === 0) return '0 Bytes';
-        const k = 1024;
-        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-        const i = Math.floor(Math.log(bytes) / Math.log(k));
-        return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
-    }
-
-    // Logic for Plan de Estudios
-    const filePlanList = document.getElementById('archivo_plan_estudios');
-    const uiPlanDefault = document.getElementById('ui_plan_default');
-    const uiPlanUploaded = document.getElementById('ui_plan_uploaded');
-    const planNameLabel = document.getElementById('plan_estudios_name');
-    const planSizeLabel = document.getElementById('plan_estudios_size');
-    const btnDeletePlan = document.getElementById('btn_delete_plan');
-
-    if (filePlanList) {
-        filePlanList.addEventListener('change', function (e) {
-            if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-                planNameLabel.textContent = file.name;
-                planSizeLabel.textContent = formatBytes(file.size);
-
-                uiPlanDefault.classList.add('hidden');
-                uiPlanUploaded.classList.remove('hidden');
+            if (tipo === 'PAGO POR PERSONA') {
+                costoPersonaInput.disabled = false;
+                costoGrupoInput.value = '0.00';
+            } else if (tipo === 'PAGO POR GRUPO') {
+                costoGrupoInput.disabled = false;
+                costoPersonaInput.value = '0.00';
             } else {
-                // Should not happen via OS dialog cancel, but just in case
+                // BECA GRUPAL y CONDONACION
+                costoPersonaInput.value = '0.00';
+                costoGrupoInput.value = '0.00';
+            }
+
+            calcularFinanzas();
+        }
+
+        tipoPagoSelect.addEventListener('change', evaluarTipoPagoGrupo);
+        costoPersonaInput.addEventListener('input', calcularFinanzas);
+        costoGrupoInput.addEventListener('input', calcularFinanzas);
+        costoCoffeeInput.addEventListener('input', calcularFinanzas);
+        alumnosInicianInput.addEventListener('input', calcularFinanzas);
+
+        // Inject hook onto btnAgregarInst 
+        const btnAgInstFin = document.getElementById('btn_agregar_instructor');
+        if (btnAgInstFin) {
+            btnAgInstFin.addEventListener('click', () => { setTimeout(calcularFinanzas, 50); });
+        }
+
+        // Inject hook onto window.deleteInstructorItem
+        const oldDelInst = window.deleteInstructorItem;
+        window.deleteInstructorItem = function (id) {
+            oldDelInst(id);
+            calcularFinanzas();
+        };
+
+        // --- ARCHIVOS Y COMENTARIOS LOGIC ---
+        // Helper function to format bytes
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        }
+
+        // Logic for Plan de Estudios
+        const filePlanList = document.getElementById('archivo_plan_estudios');
+        const uiPlanDefault = document.getElementById('ui_plan_default');
+        const uiPlanUploaded = document.getElementById('ui_plan_uploaded');
+        const planNameLabel = document.getElementById('plan_estudios_name');
+        const planSizeLabel = document.getElementById('plan_estudios_size');
+        const btnDeletePlan = document.getElementById('btn_delete_plan');
+
+        if (filePlanList) {
+            filePlanList.addEventListener('change', function (e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    planNameLabel.textContent = file.name;
+                    planSizeLabel.textContent = formatBytes(file.size);
+
+                    uiPlanDefault.classList.add('hidden');
+                    uiPlanUploaded.classList.remove('hidden');
+                } else {
+                    // Should not happen via OS dialog cancel, but just in case
+                    uiPlanUploaded.classList.add('hidden');
+                    uiPlanDefault.classList.remove('hidden');
+                }
+            });
+
+            btnDeletePlan.addEventListener('click', function () {
+                filePlanList.value = ''; // Clear the input
                 uiPlanUploaded.classList.add('hidden');
                 uiPlanDefault.classList.remove('hidden');
-            }
-        });
+            });
+        }
 
-        btnDeletePlan.addEventListener('click', function () {
-            filePlanList.value = ''; // Clear the input
-            uiPlanUploaded.classList.add('hidden');
-            uiPlanDefault.classList.remove('hidden');
-        });
-    }
+        // Logic for Becas
+        const fileBecassList = document.getElementById('archivo_becas');
+        const uiBecasDefault = document.getElementById('ui_becas_default');
+        const uiBecasUploaded = document.getElementById('ui_becas_uploaded');
+        const becasNameLabel = document.getElementById('becas_name');
+        const becasSizeLabel = document.getElementById('becas_size');
+        const btnDeleteBecas = document.getElementById('btn_delete_becas');
 
-    // Logic for Becas
-    const fileBecassList = document.getElementById('archivo_becas');
-    const uiBecasDefault = document.getElementById('ui_becas_default');
-    const uiBecasUploaded = document.getElementById('ui_becas_uploaded');
-    const becasNameLabel = document.getElementById('becas_name');
-    const becasSizeLabel = document.getElementById('becas_size');
-    const btnDeleteBecas = document.getElementById('btn_delete_becas');
+        if (fileBecassList) {
+            fileBecassList.addEventListener('change', function (e) {
+                if (e.target.files.length > 0) {
+                    const file = e.target.files[0];
+                    becasNameLabel.textContent = file.name;
+                    becasSizeLabel.textContent = formatBytes(file.size);
 
-    if (fileBecassList) {
-        fileBecassList.addEventListener('change', function (e) {
-            if (e.target.files.length > 0) {
-                const file = e.target.files[0];
-                becasNameLabel.textContent = file.name;
-                becasSizeLabel.textContent = formatBytes(file.size);
+                    uiBecasDefault.classList.add('hidden');
+                    uiBecasUploaded.classList.remove('hidden');
+                } else {
+                    uiBecasUploaded.classList.add('hidden');
+                    uiBecasDefault.classList.remove('hidden');
+                }
+            });
 
-                uiBecasDefault.classList.add('hidden');
-                uiBecasUploaded.classList.remove('hidden');
-            } else {
+            btnDeleteBecas.addEventListener('click', function () {
+                fileBecassList.value = ''; // Clear the input
                 uiBecasUploaded.classList.add('hidden');
                 uiBecasDefault.classList.remove('hidden');
+            });
+        }
+
+        // Toggle Required class & state for Archivos Beca based on Tipo Pago select
+        const lblArchivoBecas = document.getElementById('lbl_archivo_becas');
+        function evaluarBecasRequired() {
+            if (tipoPagoSelect.value === 'BECA GRUPAL') {
+                lblArchivoBecas.textContent = '* Archivo de becas del grupo';
+            } else {
+                lblArchivoBecas.textContent = 'Archivo de becas del grupo';
+            }
+        }
+        // We append our `evaluarBecasRequired` execution into the existing select change listener
+        tipoPagoSelect.addEventListener('change', evaluarBecasRequired);
+        // initial evaluation
+        evaluarBecasRequired();
+
+        // Comentarios Counter
+        const comentariosInput = document.getElementById('comentarios');
+        const comentariosCounter = document.getElementById('comentarios_counter');
+        if (comentariosInput && comentariosCounter) {
+            comentariosInput.addEventListener('input', function (e) {
+                comentariosCounter.textContent = e.target.value.length;
+            });
+        }
+
+        // Intercept form submission to prevent empty calendar
+        document.querySelector('form').addEventListener('submit', function (e) {
+            if (calendarioData.length === 0) {
+                e.preventDefault();
+                alert('El grupo no puede guardarse sin un calendario (añada al menos una fecha).');
             }
         });
-
-        btnDeleteBecas.addEventListener('click', function () {
-            fileBecassList.value = ''; // Clear the input
-            uiBecasUploaded.classList.add('hidden');
-            uiBecasDefault.classList.remove('hidden');
-        });
-    }
-
-    // Toggle Required class & state for Archivos Beca based on Tipo Pago select
-    const lblArchivoBecas = document.getElementById('lbl_archivo_becas');
-    function evaluarBecasRequired() {
-        if (tipoPagoSelect.value === 'BECA GRUPAL') {
-            lblArchivoBecas.textContent = '* Archivo de becas del grupo';
-        } else {
-            lblArchivoBecas.textContent = 'Archivo de becas del grupo';
-        }
-    }
-    // We append our `evaluarBecasRequired` execution into the existing select change listener
-    tipoPagoSelect.addEventListener('change', evaluarBecasRequired);
-    // initial evaluation
-    evaluarBecasRequired();
-
-    // Comentarios Counter
-    const comentariosInput = document.getElementById('comentarios');
-    const comentariosCounter = document.getElementById('comentarios_counter');
-    if (comentariosInput && comentariosCounter) {
-        comentariosInput.addEventListener('input', function (e) {
-            comentariosCounter.textContent = e.target.value.length;
-        });
-    }
-
-    // Intercept form submission to prevent empty calendar
-    document.querySelector('form').addEventListener('submit', function (e) {
-        if (calendarioData.length === 0) {
-            e.preventDefault();
-            alert('El grupo no puede guardarse sin un calendario (añada al menos una fecha).');
-        }
-    });
     });
 </script>
