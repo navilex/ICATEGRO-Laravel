@@ -160,11 +160,18 @@ class GrupoController extends Controller
         }
         return response()->json($cursos);
     }
+    public function show(Grupo $grupo)
+    {
+        $grupo->load(['calendarios', 'convenios', 'instructores', 'revisiones.user', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional']);
+
+        return view('grupos.show', compact('grupo'));
+    }
+
     public function edit(Grupo $grupo)
     {
         $ofertas = OfertaEducativa::all();
         $sedes = Plantel::all();
-        $grupo->load(['calendarios', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional', 'convenios', 'instructores']);
+        $grupo->load(['calendarios', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional', 'convenios', 'instructores', 'revisiones.user']);
 
         return view('grupos.edit', compact('grupo', 'ofertas', 'sedes'));
     }
@@ -227,6 +234,29 @@ class GrupoController extends Controller
             return back()->withInput()->withErrors(['calendario_data' => 'El grupo no puede guardarse sin fechas del calendario.']);
         }
 
+        // Lógica de revisiones y estatus
+        $nuevoEstatus = $request->input('nuevo_estatus');
+        $observaciones = $request->input('observaciones_estatus');
+
+        $estatusCambiado = $nuevoEstatus && $nuevoEstatus !== $grupo->estatus;
+
+        if ($estatusCambiado || !empty($observaciones)) {
+            $grupo->revisiones()->create([
+                'estatus' => $nuevoEstatus ?? $grupo->estatus,
+                'observaciones' => $observaciones,
+                'user_id' => auth()->id()
+            ]);
+        }
+
+        if ($estatusCambiado) {
+            $validated['estatus'] = $nuevoEstatus;
+            if ($nuevoEstatus === 'AUTORIZADO') {
+                $user = auth()->user();
+                $validated['autorizado_por'] = trim($user->name . ' ' . $user->lastname . ' ' . $user->lastname2);
+                $validated['fecha_autorizacion'] = now();
+            }
+        }
+
         $grupo->update($validated);
 
         // Reconstruir calendarios
@@ -277,5 +307,107 @@ class GrupoController extends Controller
         }
 
         return redirect()->route('grupos.index')->with('success', 'Grupo modificado exitosamente.');
+    }
+
+    public function autorizar(Grupo $grupo)
+    {
+        $grupo->load(['calendarios', 'convenios', 'instructores', 'revisiones.user', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional']);
+        return view('grupos.autorizar', compact('grupo'));
+    }
+
+    public function autorizarSubmit(Request $request, Grupo $grupo)
+    {
+        $request->validate([
+            'estatus' => 'required|in:PENDIENTE,PROCESO,AUTORIZADO,RECHAZADO,CANCELADO,CONCLUIDO',
+            'observaciones' => 'nullable|string|max:200'
+        ]);
+
+        $nuevoEstatus = $request->estatus;
+
+        $grupo->revisiones()->create([
+            'estatus' => $nuevoEstatus,
+            'observaciones' => $request->observaciones,
+            'user_id' => auth()->id()
+        ]);
+
+        $grupo->estatus = $nuevoEstatus;
+        if ($nuevoEstatus === 'AUTORIZADO') {
+            $user = auth()->user();
+            $grupo->autorizado_por = trim($user->name . ' ' . $user->lastname . ' ' . $user->lastname2);
+            $grupo->fecha_autorizacion = now();
+        } else {
+            $grupo->autorizado_por = null;
+            $grupo->fecha_autorizacion = null;
+        }
+
+        $grupo->save();
+
+        return redirect()->route('grupos.index')->with('success', 'El estatus del grupo ha sido actualizado exitosamente.');
+    }
+
+    public function agregarAlumnos(Grupo $grupo)
+    {
+        $grupo->load(['plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional']);
+        return view('grupos.agregar_alumnos', compact('grupo'));
+    }
+
+    public function storeAlumnos(Request $request, Grupo $grupo)
+    {
+        // En espera del siguiente módulo de lógica...
+        return redirect()->back();
+    }
+
+    public function searchAlumnos(Request $request)
+    {
+        $query = \App\Models\Student::query();
+
+        if ($request->filled('id_alumno')) {
+            $query->where('id', $request->input('id_alumno'));
+        }
+        if ($request->filled('curp')) {
+            $query->where('curp', 'like', '%' . $request->input('curp') . '%');
+        }
+        if ($request->filled('nombre')) {
+            $query->where('name', 'like', '%' . $request->input('nombre') . '%');
+        }
+        if ($request->filled('apellido_1')) {
+            $query->where('lastname1', 'like', '%' . $request->input('apellido_1') . '%');
+        }
+        if ($request->filled('apellido_2')) {
+            $query->where('lastname2', 'like', '%' . $request->input('apellido_2') . '%');
+        }
+
+        // Si no se envió ningún parámetro, podríamos retornar vacío
+        if (!$request->filled('id_alumno') && !$request->filled('curp') && !$request->filled('nombre') && !$request->filled('apellido_1') && !$request->filled('apellido_2')) {
+            return response()->json([]);
+        }
+
+        $alumnos = $query->limit(20)->get();
+
+        return response()->json($alumnos);
+    }
+
+    public function validarSeleccionAlumno(Request $request, Grupo $grupo)
+    {
+        $request->validate([
+            'alumno_id' => 'required|exists:students,id'
+        ]);
+
+        $alumno = \App\Models\Student::find($request->alumno_id);
+        
+        // Validar que el alumno no sea instructor de este grupo
+        // Asumiendo que el instructor tiene CURP
+        $instructoresCurps = $grupo->instructores()->pluck('curp')->toArray();
+
+        if (in_array($alumno->curp, $instructoresCurps)) {
+            return response()->json(['valid' => false, 'message' => 'No se puede registrar el instructor como alumno en el grupo']);
+        }
+
+        return response()->json(['valid' => true, 'student' => $alumno]);
+    }
+
+    public function completarAlumno(Grupo $grupo, \App\Models\Student $alumno)
+    {
+        return view('grupos.completar_alumno', compact('grupo', 'alumno'));
     }
 }

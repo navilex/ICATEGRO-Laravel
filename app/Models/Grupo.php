@@ -92,4 +92,9 @@ class Grupo extends Model
             ->withPivot(['tipo', 'fecha_inicio', 'fecha_termino', 'duracion_dias', 'duracion_horas', 'horario', 'pago_instructor', 'fecha_pago', 'tipo_pago'])
             ->withTimestamps();
     }
+
+    public function revisiones()
+    {
+        return $this->hasMany(GrupoRevision::class);
+    }
 }

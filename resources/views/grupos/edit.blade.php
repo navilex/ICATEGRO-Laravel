@@ -2,6 +2,36 @@
 
 @section('title', 'Edición de Grupo - ICATEGRO')
 
+@push('styles')
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.dataTables.min.css">
+    <style>
+        .dataTables_wrapper .dataTables_length select {
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            padding: 0.25rem 2rem 0.25rem 0.5rem;
+            background-color: white;
+        }
+
+        .dataTables_wrapper .dataTables_filter input {
+            border: 1px solid #d1d5db;
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            margin-left: 0.5rem;
+            background-color: white;
+        }
+
+        table.dataTable thead th {
+            border-bottom: 2px solid #e5e7eb !important;
+            padding: 10px 18px;
+        }
+
+        table.dataTable.no-footer {
+            border-bottom: 1px solid #e5e7eb !important;
+        }
+    </style>
+@endpush
+
 @section('content')
     <div class="bg-white rounded-lg shadow-lg overflow-hidden min-h-[500px] max-w-5xl mx-auto mt-8 relative">
         <!-- Header -->
@@ -715,11 +745,122 @@
                     </div>
                 </div>
 
+                <!-- Section 12: Modificaciones de estatus y revisiones -->
+                <div class="relative mb-8 mt-12 text-center">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-400"></div>
+                    </div>
+                    <div class="relative flex justify-center items-center gap-3">
+                        <span class="px-6 py-1 bg-gray-600 text-white rounded-full text-lg shadow-md border-2 border-gray-500">Modificaciones de estatus y revisiones</span>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto bg-gray-50 border border-gray-200 rounded-lg p-4 mb-8">
+                    <table id="revisiones_table" class="w-full text-sm text-left align-middle border-collapse dt-responsive nowrap stripe hover bg-white" style="width:100%">
+                        <thead class="bg-gray-100 text-gray-700 font-bold border-b border-gray-300">
+                            <tr>
+                                <th class="py-3 px-4 border-b border-gray-200">Estatus</th>
+                                <th class="py-3 px-4 border-b border-gray-200">Observaciones</th>
+                                <th class="py-3 px-4 border-b border-gray-200">Fecha revisión</th>
+                                <th class="py-3 px-4 border-b border-gray-200">Revisado por</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($grupo->revisiones->sortByDesc('created_at') as $revision)
+                                @php
+                                    $revColorClass = 'bg-gray-500';
+                                    if(strtoupper($revision->estatus) == 'PENDIENTE') $revColorClass = 'bg-yellow-500';
+                                    elseif(strtoupper($revision->estatus) == 'AUTORIZADO') $revColorClass = 'bg-green-600';
+                                    elseif(strtoupper($revision->estatus) == 'PROCESO' || strtoupper($revision->estatus) == 'PROCESS') $revColorClass = 'bg-blue-500';
+                                    elseif(strtoupper($revision->estatus) == 'CONCLUIDO') $revColorClass = 'bg-purple-700';
+                                    elseif(strtoupper($revision->estatus) == 'RECHAZADO') $revColorClass = 'bg-red-600';
+                                @endphp
+                                <tr class="bg-white border-b border-gray-200">
+                                    <td class="py-3 px-4 whitespace-nowrap">
+                                        <div class="flex items-center justify-start gap-2">
+                                            <span class="w-3 h-3 rounded-full {{ $revColorClass }}"></span>
+                                            <span class="font-bold text-gray-700 uppercase">{{ $revision->estatus }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-3 px-4">{{ $revision->observaciones }}</td>
+                                    <td class="py-3 px-4 whitespace-nowrap">{{ $revision->created_at->format('d/m/Y \a \l\a\s H:i:s') }}</td>
+                                    <td class="py-3 px-4 uppercase">{{ $revision->user ? trim($revision->user->name . ' ' . $revision->user->lastname . ' ' . $revision->user->lastname2) : 'SISTEMA' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Section 13: Cambio de estatus -->
+                <div class="relative mb-8 mt-12 text-center">
+                    <div class="absolute inset-0 flex items-center" aria-hidden="true">
+                        <div class="w-full border-t border-gray-400"></div>
+                    </div>
+                    <div class="relative flex justify-center items-center gap-3">
+                        <span class="px-6 py-1 bg-gray-600 text-white rounded-full text-lg shadow-md border-2 border-gray-500">Cambio de estatus</span>
+                    </div>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-6 items-end">
+                        <div class="flex items-center text-lg h-full pb-2">
+                            <span class="text-[#a02142] font-bold mr-2">Estatus actual del grupo:</span>
+                            @php
+                                $colorClase = 'bg-gray-500';
+                                if($grupo->estatus == 'PENDIENTE') $colorClase = 'bg-yellow-500';
+                                elseif($grupo->estatus == 'AUTORIZADO') $colorClase = 'bg-green-600';
+                                elseif($grupo->estatus == 'PROCESS' || $grupo->estatus == 'PROCESO') $colorClase = 'bg-blue-500';
+                                elseif($grupo->estatus == 'CONCLUIDO') $colorClase = 'bg-purple-700';
+                                elseif($grupo->estatus == 'RECHAZADO') $colorClase = 'bg-red-600';
+                            @endphp
+                            <span class="w-6 h-6 rounded-full inline-block {{ $colorClase }} shadow-sm mr-2 flex-shrink-0"></span>
+                            <span class="font-bold text-gray-800 uppercase">{{ $grupo->estatus }}</span>
+                        </div>
+                        
+                        <div>
+                            @php
+                                $puedeModificarTodo = auth()->user()->role === 'ADMINISTRADOR';
+                                $puedeModificarLimitado = !$puedeModificarTodo && $grupo->estatus !== 'AUTORIZADO';
+                                $deshabilitarEstatus = !($puedeModificarTodo || $puedeModificarLimitado);
+                            @endphp
+
+                            <label for="nuevo_estatus" class="block text-[#a02142] font-bold mb-2">* Estatus</label>
+                            <select name="nuevo_estatus" id="nuevo_estatus" class="w-full border-2 border-gray-400 rounded-full p-2 px-4 focus:outline-none focus:border-red-500 bg-white" {{ $deshabilitarEstatus ? 'disabled' : '' }}>
+                                <option value="{{ $grupo->estatus }}" selected>{{ strtoupper($grupo->estatus) }}</option>
+                                @if($puedeModificarTodo)
+                                    @foreach(['PENDIENTE', 'PROCESO', 'AUTORIZADO', 'RECHAZADO', 'CONCLUIDO', 'CANCELADO'] as $opt)
+                                        @if($opt !== strtoupper($grupo->estatus))
+                                            <option value="{{ $opt }}">{{ $opt }}</option>
+                                        @endif
+                                    @endforeach
+                                @elseif($puedeModificarLimitado)
+                                    @foreach(['PENDIENTE', 'PROCESO', 'CONCLUIDO', 'CANCELADO'] as $opt)
+                                        @if($opt !== strtoupper($grupo->estatus))
+                                            <option value="{{ $opt }}">{{ $opt }}</option>
+                                        @endif
+                                    @endforeach
+                                @endif
+                            </select>
+                            
+                            @if($deshabilitarEstatus)
+                                <input type="hidden" name="nuevo_estatus" value="{{ $grupo->estatus }}">
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="observaciones_estatus" class="block text-[#a02142] font-bold mb-2">Observaciones</label>
+                        <textarea name="observaciones_estatus" id="observaciones_estatus" rows="4" class="w-full border-2 border-gray-400 rounded-lg p-3 focus:outline-none focus:border-red-500 bg-white" placeholder=""></textarea>
+                    </div>
+                </div>
+
                 <!-- Modales and forms -->
-                <div class="text-right pb-6 border-t border-gray-300 pt-6 mt-12">
-                    <button type="submit"
-                        class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-3 px-8 rounded shadow text-lg flex items-center inline-flex">
-                        <i class="fas fa-save mr-2"></i> GUARDAR CAMBIOS
+                <div class="flex justify-between py-4 border-t border-gray-300 mt-2 bg-[#f2fafc] px-8 -mx-8 -mb-8 rounded-b-lg">
+                    <a href="{{ route('grupos.index') }}" class="bg-[#dc3545] hover:bg-[#c82333] text-white font-bold py-2 px-6 rounded shadow flex items-center transition">
+                        Salir <i class="fas fa-sign-out-alt mx-1"></i>
+                    </a>
+                    <button type="submit" class="bg-[#1f2937] hover:bg-[#111827] text-white font-bold py-2 px-6 rounded shadow flex items-center transition">
+                        Guardar <i class="fas fa-save mx-1"></i>
                     </button>
                 </div>
             </form>
@@ -1051,6 +1192,9 @@
 @push('scripts')
     <!-- jQuery CDN -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables CDN -->
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
     <script>
         $(document).ready(function () {
             const tipoServicio = document.getElementById('tipo_servicio');
@@ -1829,6 +1973,30 @@
                 charCount.textContent = textareaComentarios.value.length;
                 textareaComentarios.addEventListener('input', function () {
                     charCount.textContent = this.value.length;
+                });
+            }
+
+            // --- REVISIONES DATATABLE ---
+            if ($.fn.DataTable) {
+                $('#revisiones_table').DataTable({
+                    language: {
+                        "lengthMenu": "Mostrar _MENU_ entradas",
+                        "zeroRecords": "No se encontraron resultados",
+                        "info": "Mostrando _START_ a _END_ de _TOTAL_ entradas",
+                        "infoEmpty": "Mostrando 0 a 0 de 0 entradas",
+                        "infoFiltered": "(filtrado de _MAX_ entradas totales)",
+                        "search": "Buscar:",
+                        "paginate": {
+                            "first": "Primero",
+                            "last": "Último",
+                            "next": "Siguiente",
+                            "previous": "Anterior"
+                        }
+                    },
+                    responsive: true,
+                    ordering: false,
+                    lengthMenu: [[10, 25, 50, -1], [10, 25, 50, "Todo"]],
+                    pageLength: 25
                 });
             }
 

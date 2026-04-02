@@ -134,12 +134,11 @@
                                     </td>
 
                                     <td class="px-2 py-4 text-center">
-                                        <button class="btn-impresiones {{ $hasAlumnos ? 'text-white bg-purple-500 hover:bg-purple-600 cursor-pointer shadow' : 'text-gray-400 bg-gray-200 cursor-not-allowed' }} rounded-full transition p-2" 
-                                            data-id="{{ $grupo->id }}" 
-                                            data-nombre="{{ $grupo->curso ? $grupo->curso->name : ($grupo->cursoIcategro ? $grupo->cursoIcategro->name : '-') }}" 
-                                            data-estatus="{{ $grupo->estatus }}"
-                                            title="Impresiones" 
-                                            {{ !$hasAlumnos ? 'disabled' : '' }}>
+                                        <button
+                                            class="btn-impresiones {{ $hasAlumnos ? 'text-white bg-purple-500 hover:bg-purple-600 cursor-pointer shadow' : 'text-gray-400 bg-gray-200 cursor-not-allowed' }} rounded-full transition p-2"
+                                            data-id="{{ $grupo->id }}"
+                                            data-nombre="{{ $grupo->curso ? $grupo->curso->name : ($grupo->cursoIcategro ? $grupo->cursoIcategro->name : '-') }}"
+                                            data-estatus="{{ $grupo->estatus }}" title="Impresiones" {{ !$hasAlumnos ? 'disabled' : '' }}>
                                             <i class="fas fa-print text-sm"></i>
                                         </button>
                                     </td>
@@ -252,18 +251,21 @@
         </div>
 
         <!-- Impresiones Modal -->
-        <div id="modalImpresiones" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div id="modalImpresiones"
+            class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-3xl overflow-hidden relative">
                 <!-- Header -->
                 <div class="flex justify-between items-center p-4 border-b">
                     <div class="flex items-center text-lg font-bold text-gray-800">
                         <i class="fas fa-print text-purple-600 mr-2 text-2xl"></i> IMPRESIONES DE DOCUMENTOS DEL GRUPO
                     </div>
-                    <button type="button" class="btn-cerrar-modal text-white bg-pink-500 hover:bg-pink-600 rounded-full w-8 h-8 flex items-center justify-center border-2 border-pink-400 transition shadow" title="Cerrar">
+                    <button type="button"
+                        class="btn-cerrar-modal text-white bg-pink-500 hover:bg-pink-600 rounded-full w-8 h-8 flex items-center justify-center border-2 border-pink-400 transition shadow"
+                        title="Cerrar">
                         <i class="fas fa-times text-sm"></i>
                     </button>
                 </div>
-                
+
                 <!-- Info Section -->
                 <div class="grid grid-cols-3 gap-6 p-6 text-center border-b">
                     <div>
@@ -286,39 +288,53 @@
                 <!-- Formatos Section -->
                 <div class="px-8 pb-12 pt-8 text-center bg-gray-50 bg-opacity-50 relative">
                     <div class="w-[90%] border-t border-gray-400 absolute top-12 left-[5%] z-0"></div>
-                    <div class="inline-block bg-[#c9ab81] text-white font-bold py-2 px-8 rounded-full shadow-md mb-10 border-b-4 border-yellow-700 text-lg relative z-10">
+                    <div
+                        class="inline-block bg-[#c9ab81] text-white font-bold py-2 px-8 rounded-full shadow-md mb-10 border-b-4 border-yellow-700 text-lg relative z-10">
                         Formatos
                     </div>
-                    
+
                     <div class="flex flex-wrap justify-center gap-12 relative z-10">
                         <!-- Botón 1 -->
                         <div class="flex flex-col items-center cursor-pointer group w-28">
-                            <div class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-purple-300 group-hover:shadow-lg transition">
-                                <i class="fas fa-file-invoice text-[2.5rem] text-purple-500 group-hover:text-purple-600 transition"></i>
+                            <div
+                                class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-purple-300 group-hover:shadow-lg transition">
+                                <i
+                                    class="fas fa-file-invoice text-[2.5rem] text-purple-500 group-hover:text-purple-600 transition"></i>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-purple-600 transition text-center">LISTA DE<br>ASISTENCIA</span>
+                            <span
+                                class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-purple-600 transition text-center">LISTA
+                                DE<br>ASISTENCIA</span>
                         </div>
                         <!-- Botón 2 -->
                         <div class="flex flex-col items-center cursor-pointer group w-28">
-                            <div class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-blue-300 group-hover:shadow-lg transition">
-                                <i class="fas fa-file-alt text-[2.5rem] text-blue-500 group-hover:text-blue-600 transition"></i>
+                            <div
+                                class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-blue-300 group-hover:shadow-lg transition">
+                                <i
+                                    class="fas fa-file-alt text-[2.5rem] text-blue-500 group-hover:text-blue-600 transition"></i>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-blue-600 transition text-center">DOCUMENTOS<br>ENTREGADOS</span>
+                            <span
+                                class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-blue-600 transition text-center">DOCUMENTOS<br>ENTREGADOS</span>
                         </div>
                         <!-- Botón 3 -->
                         <div class="flex flex-col items-center cursor-pointer group w-28">
-                            <div class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-green-300 group-hover:shadow-lg transition relative">
-                                <i class="fas fa-certificate text-[2.5rem] text-green-500 group-hover:text-green-600 transition"></i>
-                                <div class="absolute bottom-2 right-2 text-red-500"><i class="fas fa-ribbon text-xl drop-shadow-sm"></i></div>
+                            <div
+                                class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-green-300 group-hover:shadow-lg transition relative">
+                                <i
+                                    class="fas fa-certificate text-[2.5rem] text-green-500 group-hover:text-green-600 transition"></i>
+                                <div class="absolute bottom-2 right-2 text-red-500"><i
+                                        class="fas fa-ribbon text-xl drop-shadow-sm"></i></div>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-green-600 transition text-center">IMPRESIÓN DE<br>CONSTANCIAS</span>
+                            <span
+                                class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-green-600 transition text-center">IMPRESIÓN
+                                DE<br>CONSTANCIAS</span>
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Footer -->
                 <div class="p-4 border-t flex justify-end bg-white">
-                    <button type="button" class="btn-cerrar-modal bg-[#ec3243] hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition shadow">
+                    <button type="button"
+                        class="btn-cerrar-modal bg-[#ec3243] hover:bg-red-700 text-white font-bold py-2 px-6 rounded transition shadow">
                         Cerrar
                     </button>
                 </div>
@@ -366,12 +382,12 @@
             });
 
             // Configuración del modal general
-            $('.btn-cerrar-modal').on('click', function() {
+            $('.btn-cerrar-modal').on('click', function () {
                 $('#modalOpciones').addClass('hidden');
                 $('#modalImpresiones').addClass('hidden');
             });
 
-            $('#modalOpciones, #modalImpresiones').on('click', function(e) {
+            $('#modalOpciones, #modalImpresiones').on('click', function (e) {
                 if (e.target === this) {
                     $(this).addClass('hidden');
                 }
@@ -380,56 +396,64 @@
             // Generador dinámico de botones según estatus
             function getActionButtons(id, estatus) {
                 let btnVerDatos = `
-                        <div class="flex flex-col items-center cursor-pointer group w-24">
-                            <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-blue-300 group-hover:shadow-lg transition">
-                                <i class="fas fa-eye text-4xl text-blue-400 group-hover:text-blue-500 transition"></i>
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-blue-600 transition text-center">VER DATOS DEL GRUPO</span>
-                        </div>
-                    `;
+                            <a href="/grupos/${id}" class="flex flex-col items-center cursor-pointer group w-24">
+                                <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-blue-300 group-hover:shadow-lg transition">
+                                    <i class="fas fa-eye text-4xl text-blue-400 group-hover:text-blue-500 transition"></i>
+                                </div>
+                                <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-blue-600 transition text-center">VER DATOS DEL GRUPO</span>
+                            </a>
+                        `;
                 let btnModificar = `
-                    <a href="/grupos/${id}/edit" class="flex flex-col items-center cursor-pointer group w-24">
-                        <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-yellow-300 group-hover:shadow-lg transition">
-                            <i class="fas fa-file-signature text-4xl text-yellow-500 group-hover:text-yellow-600 transition"></i>
-                        </div>
-                        <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-yellow-600 transition text-center">MODIFICAR GRUPO</span>
-                    </a>
-                `;
+                        <a href="/grupos/${id}/edit" class="flex flex-col items-center cursor-pointer group w-24">
+                            <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-yellow-300 group-hover:shadow-lg transition">
+                                <i class="fas fa-file-signature text-4xl text-yellow-500 group-hover:text-yellow-600 transition"></i>
+                            </div>
+                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-yellow-600 transition text-center">MODIFICAR GRUPO</span>
+                        </a>
+                    `;
                 let btnAgregarAlumnos = `
-                        <div class="flex flex-col items-center cursor-pointer group w-24">
-                            <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-green-300 group-hover:shadow-lg transition relative">
-                                <i class="fas fa-users text-4xl text-green-500 group-hover:text-green-600 transition"></i>
-                                <div class="absolute -bottom-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow border-2 border-white"><i class="fas fa-plus"></i></div>
-                            </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-green-600 transition text-center">AGREGAR ALUMNOS</span>
-                        </div>
-                    `;
+                            <a href="/grupos/${id}/alumnos" class="flex flex-col items-center cursor-pointer group w-24">
+                                <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-green-300 group-hover:shadow-lg transition relative">
+                                    <i class="fas fa-users text-4xl text-green-500 group-hover:text-green-600 transition"></i>
+                                    <div class="absolute -bottom-1 -right-1 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center font-bold text-xs shadow border-2 border-white"><i class="fas fa-plus"></i></div>
+                                </div>
+                                <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-green-600 transition text-center">AGREGAR ALUMNOS</span>
+                            </a>
+                        `;
                 let btnCalificar = `
-                        <div class="flex flex-col items-center cursor-pointer group w-24">
-                            <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-purple-300 group-hover:shadow-lg transition">
-                                <i class="fas fa-clipboard-check text-4xl text-purple-400 group-hover:text-purple-500 transition"></i>
+                            <div class="flex flex-col items-center cursor-pointer group w-24">
+                                <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-purple-300 group-hover:shadow-lg transition">
+                                    <i class="fas fa-clipboard-check text-4xl text-purple-400 group-hover:text-purple-500 transition"></i>
+                                </div>
+                                <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-purple-600 transition text-center">CALIFICAR ALUMNOS</span>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-purple-600 transition text-center">CALIFICAR ALUMNOS</span>
-                        </div>
-                    `;
+                        `;
                 let btnFolios = `
-                        <div class="flex flex-col items-center cursor-pointer group w-24">
-                            <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-orange-300 group-hover:shadow-lg transition relative">
-                                <i class="fas fa-clipboard-list text-4xl text-orange-400 group-hover:text-orange-500 transition"></i>
-                                <div class="absolute -bottom-1 -right-1 text-yellow-500 rounded-full bg-white w-6 h-6 flex items-center justify-center font-bold text-[10px] shadow border-2 border-white"><i class="fas fa-certificate"></i></div>
+                            <div class="flex flex-col items-center cursor-pointer group w-24">
+                                <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-orange-300 group-hover:shadow-lg transition relative">
+                                    <i class="fas fa-clipboard-list text-4xl text-orange-400 group-hover:text-orange-500 transition"></i>
+                                    <div class="absolute -bottom-1 -right-1 text-yellow-500 rounded-full bg-white w-6 h-6 flex items-center justify-center font-bold text-[10px] shadow border-2 border-white"><i class="fas fa-certificate"></i></div>
+                                </div>
+                                <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-orange-600 transition text-center">ASIGNAR FOLIOS</span>
                             </div>
-                            <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-orange-600 transition text-center">ASIGNAR FOLIOS</span>
-                        </div>
-                    `;
+                        `;
+                let btnAutorizar = `
+                            <a href="/grupos/${id}/autorizar" class="flex flex-col items-center cursor-pointer group w-24">
+                                <div class="w-20 h-20 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-gray-800 group-hover:shadow-lg transition">
+                                    <i class="fas fa-thumbs-up text-4xl text-gray-700 group-hover:text-black transition"></i>
+                                </div>
+                                <span class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-black transition text-center">AUTORIZAR GRUPO</span>
+                            </a>
+                        `;
 
                 let html = '';
 
-                if (estatus.toUpperCase() === 'AUTORIZADO') {
-                    html = btnVerDatos + btnModificar + btnAgregarAlumnos;
+                if (estatus.toUpperCase() === 'AUTORIZADO' || estatus.toUpperCase() === 'PENDIENTE') {
+                    html = btnVerDatos + btnModificar + btnAgregarAlumnos + btnAutorizar;
                 } else if (estatus.toUpperCase() === 'CONCLUIDO') {
                     html = btnVerDatos + btnModificar + btnCalificar + btnFolios;
                 } else {
-                    html = btnVerDatos;
+                    html = btnVerDatos + btnAutorizar;
                 }
                 return html;
             }
@@ -453,11 +477,6 @@
                 let nombre = $(this).data('nombre');
                 let estatus = $(this).data('estatus') || '';
 
-                if (estatus.toUpperCase() === 'PENDIENTE') {
-                    alert('El grupo se encuentra PENDIENTE. Espere a que sea autorizado.');
-                    return;
-                }
-
                 // Rellenar cabecera modal
                 $('#modal-grupo-id').text(id);
                 $('#modal-grupo-nombre').text(nombre);
@@ -475,27 +494,27 @@
             });
 
             // Click en el botón de impresiones
-            $('#gruposTable').on('click', '.btn-impresiones', function() {
+            $('#gruposTable').on('click', '.btn-impresiones', function () {
                 if ($(this).prop('disabled')) return;
-                
+
                 let id = $(this).data('id');
                 let nombre = $(this).data('nombre');
                 let estatus = $(this).data('estatus') || '';
-                
+
                 if (estatus.toUpperCase() !== 'CONCLUIDO') {
                     alert('Atención: El grupo debe estar CONCLUIDO para poder imprimir sus formatos correspondientes.');
                     return;
                 }
-                
+
                 // Rellenar cabecera modal
                 $('#modal-imp-grupo-id').text(id);
                 $('#modal-imp-grupo-nombre').text(nombre);
                 $('#modal-imp-grupo-estatus').text(estatus.toUpperCase());
-                
+
                 $('#modal-imp-grupo-estatus-dot')
                     .removeClass()
                     .addClass('w-4 h-4 rounded-full mr-2 ' + getColorClass(estatus));
-                
+
                 // Mostrar modal
                 $('#modalImpresiones').removeClass('hidden');
             });

@@ -88,8 +88,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/grupos', [\App\Http\Controllers\GrupoController::class, 'index'])->name('grupos.index');
     Route::get('/grupos/create', [\App\Http\Controllers\GrupoController::class, 'create'])->name('grupos.create');
     Route::post('/grupos', [\App\Http\Controllers\GrupoController::class, 'store'])->name('grupos.store');
+    Route::get('/grupos/{grupo}', [\App\Http\Controllers\GrupoController::class, 'show'])->name('grupos.show');
     Route::get('/grupos/{grupo}/edit', [\App\Http\Controllers\GrupoController::class, 'edit'])->name('grupos.edit');
     Route::put('/grupos/{grupo}', [\App\Http\Controllers\GrupoController::class, 'update'])->name('grupos.update');
+    Route::get('/grupos/{grupo}/autorizar', [\App\Http\Controllers\GrupoController::class, 'autorizar'])->name('grupos.autorizar');
+    Route::post('/grupos/{grupo}/autorizar', [\App\Http\Controllers\GrupoController::class, 'autorizarSubmit'])->name('grupos.autorizar_submit');
+    Route::get('/grupos/{grupo}/alumnos', [\App\Http\Controllers\GrupoController::class, 'agregarAlumnos'])->name('grupos.alumnos.create');
+    Route::post('/grupos/{grupo}/alumnos', [\App\Http\Controllers\GrupoController::class, 'storeAlumnos'])->name('grupos.alumnos.store');
+    Route::post('/grupos/{grupo}/alumnos/validar-seleccion', [\App\Http\Controllers\GrupoController::class, 'validarSeleccionAlumno'])->name('grupos.alumnos.validar');
+    Route::get('/grupos/{grupo}/alumnos/{alumno}/completar', [\App\Http\Controllers\GrupoController::class, 'completarAlumno'])->name('grupos.alumnos.completar');
+    
+    Route::get('/api/alumnos/search', [\App\Http\Controllers\GrupoController::class, 'searchAlumnos']);
     Route::get('/api/grupos/campos-formacion/{ofertaId}', [\App\Http\Controllers\GrupoController::class, 'getCamposFormacion']);
     Route::get('/api/grupos/especialidades/{campoId}', [\App\Http\Controllers\GrupoController::class, 'getEspecialidades']);
     Route::get('/api/grupos/cursos/{especialidadId}/{tipo}', [\App\Http\Controllers\GrupoController::class, 'getCursos']);
