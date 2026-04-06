@@ -273,8 +273,8 @@
                         required>
                         <option value="USUARIO COMUN" {{ old('role') == 'USUARIO COMUN' ? 'selected' : '' }}>USUARIO COMUN
                         </option>
-                        <option value="USUARIO ADMINISTRADOR" {{ old('role') == 'USUARIO ADMINISTRADOR' ? 'selected' : '' }}>
-                            USUARIO ADMINISTRADOR</option>
+                        <option value="ADMINISTRADOR" {{ old('role') == 'ADMINISTRADOR' ? 'selected' : '' }}>
+                            ADMINISTRADOR</option>
                     </select>
                 </div>
 

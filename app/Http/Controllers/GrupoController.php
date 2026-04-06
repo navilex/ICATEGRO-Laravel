@@ -86,6 +86,8 @@ class GrupoController extends Controller
             $validated['archivo_becas'] = $request->file('archivo_becas')->store('grupos/archivos', 'public');
         }
 
+        $validated['user_id'] = auth()->id();
+
         $grupo = Grupo::create($validated);
 
         foreach ($calendarios as $cal) {
@@ -162,7 +164,7 @@ class GrupoController extends Controller
     }
     public function show(Grupo $grupo)
     {
-        $grupo->load(['calendarios', 'convenios', 'instructores', 'revisiones.user', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional']);
+        $grupo->load(['creador', 'calendarios', 'convenios', 'instructores', 'revisiones.user', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional']);
 
         return view('grupos.show', compact('grupo'));
     }
@@ -171,7 +173,7 @@ class GrupoController extends Controller
     {
         $ofertas = OfertaEducativa::all();
         $sedes = Plantel::all();
-        $grupo->load(['calendarios', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional', 'convenios', 'instructores', 'revisiones.user']);
+        $grupo->load(['creador', 'calendarios', 'plantel.user', 'curso', 'cursoIcategro', 'ofertaEducativa', 'campoFormacion', 'especialidadOcupacional', 'convenios', 'instructores', 'revisiones.user']);
 
         return view('grupos.edit', compact('grupo', 'ofertas', 'sedes'));
     }
@@ -332,8 +334,9 @@ class GrupoController extends Controller
 
         $grupo->estatus = $nuevoEstatus;
         if ($nuevoEstatus === 'AUTORIZADO') {
-            $user = auth()->user();
-            $grupo->autorizado_por = trim($user->name . ' ' . $user->lastname . ' ' . $user->lastname2);
+            //$user = auth()->user();
+            $grupo->autorizado_por = auth()->id();
+            //$grupo->autorizado_por = trim($user->name . ' ' . $user->lastname . ' ' . $user->lastname2);
             $grupo->fecha_autorizacion = now();
         } else {
             $grupo->autorizado_por = null;

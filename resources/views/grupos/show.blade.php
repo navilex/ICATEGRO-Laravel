@@ -29,7 +29,12 @@
                     <div class="text-[#a02142] font-bold text-sm mb-1">Registrado por</div>
                     <div
                         class="bg-white border-2 border-gray-800 rounded-full px-4 py-2 text-sm font-bold text-gray-800 uppercase">
-                        {{ $grupo->plantel && $grupo->plantel->user ? $grupo->plantel->user->name . ' ' . $grupo->plantel->user->last_name . ' ' . $grupo->plantel->user->last_name2 : 'ADMINISTRADOR' }}
+                        {{-- Usamos la relación directa 'creador' cargada en el controlador --}}
+                        @if($grupo->creador)
+                            {{ $grupo->creador->name }} {{ $grupo->creador->lastname }} {{ $grupo->creador->lastname2 }}
+                        @else
+                            ADMINISTRADOR / SISTEMA
+                        @endif
                     </div>
                 </div>
                 <div class="col-span-1 border-b border-gray-300 pb-2">
@@ -48,7 +53,8 @@
                                 @elseif(strtoupper($grupo->estatus) == 'AUTORIZADO') bg-green-600 
                                 @elseif(strtoupper($grupo->estatus) == 'PROCESO' || strtoupper($grupo->estatus) == 'PROCESS') bg-blue-500 
                                 @elseif(strtoupper($grupo->estatus) == 'CONCLUIDO') bg-purple-700 
-                                @elseif(strtoupper($grupo->estatus) == 'RECHAZADO') bg-red-600 
+                                @elseif(strtoupper($grupo->estatus) == 'RECHAZADO') bg-red-600
+                                @elseif(strtoupper($grupo->estatus) == 'CALIFICADO') bg-pink-500 
                                 @else bg-gray-500 @endif
                             "></span>
                         {{ strtoupper($grupo->estatus) }}
@@ -573,7 +579,13 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                 <div>
                     <label class="block text-[#a02142] font-bold mb-1">Autorizado por</label>
-                    <div class="w-full border-2 border-gray-800 rounded-full p-2 px-4 bg-white font-bold text-gray-800 uppercase">{{ $grupo->autorizado_por ?? 'NO AUTORIZADO AÚN' }}</div>
+                    <div class="w-full border-2 border-gray-800 rounded-full p-2 px-4 bg-white font-bold text-gray-800 uppercase">
+                        @if($grupo->autorizador)
+                            {{ $grupo->autorizador->name }} {{ $grupo->autorizador->lastname }} {{ $grupo->autorizador->lastname2 }}
+                        @else
+                            NO AUTORIZADO AÚN
+                        @endif
+                    </div>
                 </div>
                 <div>
                     <label class="block text-[#a02142] font-bold mb-1">Fecha autorización</label>
@@ -610,7 +622,8 @@
                                         @elseif(strtoupper($revision->estatus) == 'AUTORIZADO') bg-green-600 
                                         @elseif(strtoupper($revision->estatus) == 'PROCESO' || strtoupper($revision->estatus) == 'PROCESS') bg-blue-500 
                                         @elseif(strtoupper($revision->estatus) == 'CONCLUIDO') bg-purple-700 
-                                        @elseif(strtoupper($revision->estatus) == 'RECHAZADO') bg-red-600 
+                                        @elseif(strtoupper($revision->estatus) == 'RECHAZADO') bg-red-600
+                                        @elseif(strtoupper($revision->estatus) == 'CALIFICADO') bg-pink-500 
                                         @else bg-gray-500 @endif
                                     "></span>
                                     <span>{{ $revision->estatus }}</span>

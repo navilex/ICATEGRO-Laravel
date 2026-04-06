@@ -42,6 +42,7 @@ class Grupo extends Model
         'archivo_plan_estudios',
         'archivo_becas',
         'comentarios',
+        'user_id',
         'autorizado_por',
         'fecha_autorizacion'
     ];
@@ -91,6 +92,16 @@ class Grupo extends Model
         return $this->belongsToMany(Instructor::class, 'grupo_instructor')
             ->withPivot(['tipo', 'fecha_inicio', 'fecha_termino', 'duracion_dias', 'duracion_horas', 'horario', 'pago_instructor', 'fecha_pago', 'tipo_pago'])
             ->withTimestamps();
+    }
+
+    public function creador()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function autorizador()
+    {
+        return $this->belongsTo(User::class, 'autorizado_por');
     }
 
     public function revisiones()

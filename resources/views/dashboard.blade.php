@@ -23,20 +23,18 @@
         <div class="space-y-4">
             <!-- Notifications -->
             <div class="p-4 border rounded hover:bg-gray-50 transition flex justify-between items-center shadow-sm">
-                <span class="font-medium text-gray-700">Próximamente modulo de alta de oferta educativa</span>
-                <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">09-02-2023</span>
+                <span class="font-medium text-gray-700">FASE BETA DEL PROGRAMA REPORTAR FALLAS AL ADMINISTRADOR</span>
+                <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">05-04-2026</span>
             </div>
 
             <div class="p-4 border rounded hover:bg-gray-50 transition flex justify-between items-center shadow-sm">
-                <span class="font-medium text-gray-700">Próximamente modulo de alta de campos de formación
-                    profesional</span>
-                <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">13-02-2023</span>
+                <span class="font-medium text-gray-700">Próximamente modulo de impresiones</span>
+                <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">05-04-2026</span>
             </div>
 
             <div class="p-4 border rounded hover:bg-gray-50 transition flex justify-between items-center shadow-sm">
-                <span class="font-medium text-gray-700">Próximamente modulo de alta de especialidades
-                    ocupacionales</span>
-                <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">14-02-2023</span>
+                <span class="font-medium text-gray-700">Próximamente modulo de reportes</span>
+                <span class="bg-gray-900 text-white text-xs font-bold px-3 py-1 rounded-full">05-04-2026</span>
             </div>
         </div>
     </div>

@@ -29,7 +29,11 @@
                     <div class="text-[#a02142] font-bold text-sm mb-1">Registrado por</div>
                     <div
                         class="bg-white border-2 border-gray-800 rounded-full px-4 py-2 text-sm font-bold text-gray-800 uppercase">
-                        {{ $grupo->plantel && $grupo->plantel->user ? $grupo->plantel->user->name . ' ' . $grupo->plantel->user->last_name . ' ' . $grupo->plantel->user->last_name2 : 'ADMINISTRADOR' }}
+                        @if($grupo->creador)
+                            {{ $grupo->creador->name }} {{ $grupo->creador->lastname }} {{ $grupo->creador->lastname2 }}
+                        @else
+                            ADMINISTRADOR / SISTEMA
+                        @endif
                     </div>
                 </div>
                 <div class="col-span-1 border-b border-gray-300 pb-2">
@@ -552,7 +556,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
                 <div>
                     <label class="block text-[#a02142] font-bold mb-1">Modificado por</label>
-                    <div class="w-full border-2 border-gray-800 rounded-full p-2 px-4 bg-white font-bold text-gray-800 uppercase">{{ $ultimaModificacion && $ultimaModificacion->user ? $ultimaModificacion->user->name . ' ' . $ultimaModificacion->user->last_name . ' ' . $ultimaModificacion->user->last_name2 : 'SIN MODIFICACIONES' }}</div>
+                    <div class="w-full border-2 border-gray-800 rounded-full p-2 px-4 bg-white font-bold text-gray-800 uppercase">{{ $ultimaModificacion && $ultimaModificacion->user ? $ultimaModificacion->user->name . ' ' . $ultimaModificacion->user->lastname . ' ' . $ultimaModificacion->user->lastname2 : 'SIN MODIFICACIONES' }}</div>
                 </div>
                 <div>
                     <label class="block text-[#a02142] font-bold mb-1">Fecha modificación</label>
