@@ -79,6 +79,16 @@ class GrupoPdfDocumentosController extends Controller
         $pdf->SetAutoPageBreak(TRUE, 15);
         $pdf->AddPage();
 
+        // Colocar Imagen primero (Banner)
+        $rutaImagen = public_path('images/IMPRESIONES_DOCUMENTACION.jpg');
+        if (file_exists($rutaImagen)) {
+            // X=10, Y=5, Ancho=277 (para cubrir margen a margen en A4 horizontal)
+            $pdf->Image($rutaImagen, 10, 5, 277, 22, 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        }
+
+        // Ajustar cursor Y debajo de la imagen para el título
+        $pdf->SetY(28);
+
         $html = <<<EOD
         <style>
             .header-title { text-align: center; font-weight: bold; font-size: 12px; }

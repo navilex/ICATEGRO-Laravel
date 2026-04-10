@@ -11,18 +11,16 @@ class GrupoPdfAsistenciaController extends Controller
 {
     public function listaAsistencia(Grupo $grupo)
     {
-        // Verificar que el grupo esté autorizado
+        // 1. Carga de relaciones y verificación de estatus
+        $grupo->load(['listaAlumnos.student', 'plantel', 'curso', 'cursoIcategro']);
+
         $estatusValidos = ['AUTORIZADO', 'PROCESO', 'CALIFICADO', 'CONCLUIDO'];
         if (!in_array(strtoupper($grupo->estatus), $estatusValidos)) {
             abort(403, 'El grupo debe estar autorizado para visualizar la lista de asistencia.');
         }
 
-        // Obtener datos de cabecera
-        $mesInicio = '??';
-        if ($grupo->fecha_inicio) {
-            $mesInicio = strtoupper(Carbon::parse($grupo->fecha_inicio)->locale('es')->translatedFormat('F'));
-        }
-
+        // 2. Preparación de datos
+        $mesInicio = $grupo->fecha_inicio ? strtoupper(Carbon::parse($grupo->fecha_inicio)->locale('es')->translatedFormat('F')) : '??';
         $direccionGeneral = $grupo->plantel ? $grupo->plantel->name : '??';
 
         $claveCct = '??';
@@ -47,37 +45,45 @@ class GrupoPdfAsistenciaController extends Controller
         $duracionDias = $grupo->duracion_dias ?? '??';
         $horario = mb_strtoupper($grupo->horario ?? '??');
 
-        // --- NUEVA LÓGICA: Obtener alumnos ---
-        // Cargamos la relación para evitar múltiples consultas a la base de datos
-        $inscritos = $grupo->listaAlumnos()->with('student')->get();
+        $inscritos = $grupo->listaAlumnos;
 
-        // Configuración de TCPDF
+        // 3. Configuración de TCPDF
         $pdf = new \TCPDF('L', 'mm', 'A4', true, 'UTF-8', false);
         $pdf->SetCreator('ICATEGRO');
         $pdf->SetAuthor('ICATEGRO');
         $pdf->SetTitle('Lista de Asistencia - Grupo ' . $idGrupo);
-        $pdf->SetMargins(10, 10, 10); // Márgenes ligeramente reducidos
+
+        // Márgenes: Superior en 10 para empezar desde arriba con la imagen
+        $pdf->SetMargins(10, 10, 10);
         $pdf->setPrintHeader(false);
         $pdf->setPrintFooter(false);
         $pdf->SetAutoPageBreak(TRUE, 15);
         $pdf->AddPage();
 
+        // 4. Colocar Imagen primero (Banner)
         $rutaImagen = public_path('images/IMPRESIONES_DOCUMENTACION.jpg');
-        //$pdf->Image($rutaImagen, 10, 10, 190, 0, 'JPG');
+        if (file_exists($rutaImagen)) {
+            // X=10, Y=5, Ancho=277 (para cubrir margen a margen en A4 horizontal)
+            $pdf->Image($rutaImagen, 10, 5, 277, 22, 'JPG', '', 'T', false, 300, '', false, false, 0, false, false, false);
+        }
 
-        // Estilos CSS: Añadimos estilos para la tabla de asistencia
+        // 5. Ajustar cursor Y debajo de la imagen para el título
+        $pdf->SetY(28);
+
+        // 6. Estilos CSS y Contenido HTML
         $html = <<<EOD
         <style>
             .header-title {
                 text-align: center;
                 font-weight: bold;
-                font-size: 13px;
+                font-size: 12px;
                 line-height: 1.2;
+                margin-bottom: 10px;
             }
             .table-container {
                 border: 1px solid #000;
                 width: 100%;
-                margin-top: 15px;
+                margin-top: 10px;
             }
             .info-table {
                 width: 100%;
@@ -92,12 +98,11 @@ class GrupoPdfAsistenciaController extends Controller
             .label { font-weight: bold; }
             .value { border-bottom: 0.5px solid #000; }
 
-            /* Estilos para la tabla de alumnos (Asistencia) */
             .attendance-table {
                 width: 100%;
                 border-collapse: collapse;
                 margin-top: 10px;
-                font-size: 7px; /* Fuente pequeña para que quepan los 31 días */
+                font-size: 7px;
             }
             .attendance-table th {
                 border: 1px solid #000;
@@ -109,13 +114,11 @@ class GrupoPdfAsistenciaController extends Controller
             .attendance-table td {
                 border: 1px solid #000;
                 text-align: center;
-                height: 18px;
+                height: 16px;
                 vertical-align: middle;
             }
             .col-nombre { text-align: left !important; padding-left: 3px; }
         </style>
-
-        <br><br>
 
         <div class="header-title">
             DIRECCION GENERAL DE CENTROS DE FORMACION PARA EL TRABAJO<br>
@@ -173,59 +176,96 @@ class GrupoPdfAsistenciaController extends Controller
         <br><br>
 
         <table class="attendance-table" cellpadding="1">
+
             <thead>
+
                 <tr>
+
                     <th width="3%">Num</th>
+
                     <th width="5%">ID Alumno</th>
+
                     <th width="12%">NUM. DE CONTROL</th>
+
                     <th width="24%">NOMBRE DEL ALUMNO</th>
+
 EOD;
 
         // Generar columnas de los días (1 al 31)
+
         for ($i = 1; $i <= 31; $i++) {
+
             $html .= '<th width="1.5%">' . $i . '</th>';
+
         }
 
         $html .= <<<EOD
+
                     <th width="4%">AI</th>
+
                     <th width="5.5%">Calif. final</th>
+
                 </tr>
+
             </thead>
+
             <tbody>
+
 EOD;
 
         // Iterar sobre los alumnos para llenar la tabla
+
         foreach ($inscritos as $key => $registro) {
+
             $alumno = $registro->student;
+
             $num = $key + 1;
+
             $idAlumno = $alumno->id;
+
             $numControl = $alumno->matricula; // Usando el accessor de tu modelo Student
 
             // Formato de nombre: APELLIDO1 / APELLIDO2 * NOMBRES
+
             $nombreCompleto = mb_strtoupper($alumno->lastname1 . ' / ' . $alumno->lastname2 . ' * ' . $alumno->name);
+
             $calificacion = $registro->calificacion ?? '';
 
             $html .= "<tr>
+
                 <td width=\"3%\">{$num}</td>
+
                 <td width=\"5%\">{$idAlumno}</td>
+
                 <td width=\"12%\">{$numControl}</td>
+
                 <td width=\"24%\" class=\"col-nombre\">{$nombreCompleto}</td>";
 
             // Celdas vacías para los 31 días
+
             for ($i = 1; $i <= 31; $i++) {
+
                 $html .= '<td width="1.5%"></td>';
+
             }
 
             $html .= "
+
                 <td width=\"4%\"></td>
+
                 <td width=\"5.5%\">{$calificacion}</td>
+
             </tr>";
+
         }
 
         $html .= '</tbody></table>';
 
+        // 7. Escribir el HTML
         $pdf->writeHTML($html, true, false, true, false, '');
 
-        $pdf->Output('Lista_Asistencia_Grupo_' . $idGrupo . '.pdf', 'I');
+        // 8. Salida
+        return response($pdf->Output('Lista_Asistencia_Grupo_' . $idGrupo . '.pdf', 'I'))
+            ->header('Content-Type', 'application/pdf');
     }
 }

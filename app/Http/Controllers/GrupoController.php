@@ -238,8 +238,6 @@ class GrupoController extends Controller
 
         // Lógica de revisiones y estatus
         $nuevoEstatus = $request->input('nuevo_estatus');
-        $observaciones = $request->input('observaciones_estatus');
-
         $estatusCambiado = $nuevoEstatus && $nuevoEstatus !== $grupo->estatus;
 
         if ($estatusCambiado || !empty($observaciones)) {
@@ -307,6 +305,15 @@ class GrupoController extends Controller
         } else {
             $grupo->instructores()->sync([]);
         }
+
+        /*
+        \Log::info('Datos de revisión:', [
+            'nuevo' => $nuevoEstatus,
+            'actual_en_db' => $grupo->estatus,
+            'cambio_detectado' => ($nuevoEstatus !== $grupo->estatus),
+            'observaciones' => $observaciones
+        ]);
+        */
 
         return redirect()->route('grupos.index')->with('success', 'Grupo modificado exitosamente.');
     }
