@@ -295,7 +295,7 @@
 
                     <div class="flex flex-wrap justify-center gap-12 relative z-10">
                         <!-- Botón 1 -->
-                        <div class="flex flex-col items-center cursor-pointer group w-28">
+                        <a id="btn-lista-asistencia" href="#" target="_blank" class="flex flex-col items-center cursor-pointer group w-28">
                             <div
                                 class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-purple-300 group-hover:shadow-lg transition">
                                 <i
@@ -304,9 +304,9 @@
                             <span
                                 class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-purple-600 transition text-center">LISTA
                                 DE<br>ASISTENCIA</span>
-                        </div>
+                        </a>
                         <!-- Botón 2 -->
-                        <div class="flex flex-col items-center cursor-pointer group w-28">
+                        <a id="btn-documentos-entregados" href="#" target="_blank" class="flex flex-col items-center cursor-pointer group w-28">
                             <div
                                 class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-blue-300 group-hover:shadow-lg transition">
                                 <i
@@ -314,9 +314,9 @@
                             </div>
                             <span
                                 class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-blue-600 transition text-center">DOCUMENTOS<br>ENTREGADOS</span>
-                        </div>
+                        </a>
                         <!-- Botón 3 -->
-                        <div class="flex flex-col items-center cursor-pointer group w-28">
+                        <a id="btn-impresion-constancias" href="#" target="_blank" class="flex flex-col items-center cursor-pointer group w-28">
                             <div
                                 class="w-24 h-24 rounded-full border-4 border-gray-200 flex items-center justify-center bg-white shadow-md mb-3 group-hover:border-green-300 group-hover:shadow-lg transition relative">
                                 <i
@@ -327,7 +327,7 @@
                             <span
                                 class="text-[11px] font-bold text-gray-800 uppercase leading-snug group-hover:text-green-600 transition text-center">IMPRESIÓN
                                 DE<br>CONSTANCIAS</span>
-                        </div>
+                        </a>
                     </div>
                 </div>
 
@@ -501,10 +501,15 @@
                 let nombre = $(this).data('nombre');
                 let estatus = $(this).data('estatus') || '';
 
-                if (estatus.toUpperCase() !== 'CONCLUIDO') {
-                    alert('Atención: El grupo debe estar CONCLUIDO para poder imprimir sus formatos correspondientes.');
+                if (estatus.toUpperCase() === 'PENDIENTE' || estatus.toUpperCase() === 'RECHAZADO' || estatus.toUpperCase() === 'CANCELADO') {
+                    alert('Atención: El grupo debe estar AUTORIZADO o en un estatus superior para imprimir formatos.');
                     return;
                 }
+
+                // Generar URL para formatos
+                $('#btn-lista-asistencia').attr('href', `/grupos/${id}/lista-asistencia`);
+                $('#btn-documentos-entregados').attr('href', `/grupos/${id}/documentos-entregados`);
+                $('#btn-impresion-constancias').attr('href', `/grupos/${id}/constancias`);
 
                 // Rellenar cabecera modal
                 $('#modal-imp-grupo-id').text(id);

@@ -97,6 +97,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/grupos/{grupo}/alumnos', [\App\Http\Controllers\GrupoController::class, 'storeAlumnos'])->name('grupos.alumnos.store');
     Route::get('/grupos/{grupo}/calificar', [\App\Http\Controllers\GrupoController::class, 'calificarAlumnos'])->name('grupos.calificar');
     Route::post('/grupos/{grupo}/calificar', [\App\Http\Controllers\GrupoController::class, 'storeCalificaciones'])->name('grupos.calificar.store');
+    Route::get('/grupos/{grupo}/lista-asistencia', [\App\Http\Controllers\GrupoPdfAsistenciaController::class, 'listaAsistencia'])->name('grupos.pdf.lista_asistencia');
+    Route::get('/grupos/{grupo}/documentos-entregados', [\App\Http\Controllers\GrupoPdfDocumentosController::class, 'documentosEntregados'])->name('grupos.pdf.documentos');
+    Route::get('/grupos/{grupo}/constancias', [\App\Http\Controllers\GrupoPdfConstanciasController::class, 'imprimirConstancias'])->name('grupos.pdf.constancias');
     Route::get('/grupos/{grupo}/folios', [\App\Http\Controllers\GrupoController::class, 'asignarFolios'])->name('grupos.folios.create');
     Route::post('/grupos/{grupo}/folios', [\App\Http\Controllers\GrupoController::class, 'storeFolios'])->name('grupos.folios.store');
     Route::post('/grupos/{grupo}/folios/cambiar', [\App\Http\Controllers\GrupoController::class, 'cambiarFolio'])->name('grupos.folios.cambiar');
