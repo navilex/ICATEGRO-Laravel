@@ -8,7 +8,8 @@ class InstructorController extends Controller
 {
     public function index()
     {
-        $instructores = \App\Models\Instructor::with('plantel')->get();
+        //$instructores = \App\Models\Instructor::with('plantel')->get();
+        $instructores = \App\Models\Instructor::all();
         return view('instructores.index', compact('instructores'));
     }
 
